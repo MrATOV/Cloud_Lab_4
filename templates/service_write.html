@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if service %}Редактирование {{ service_name }}{% else %}Создание нового сервиса{% endif %}</title>
+    <link rel="stylesheet" href="/static/styles/write_styles.css">
+    <script src="/static/scripts/dynamic_field.js"></script>
+</head>
+<body>
+    <h1>{% if service %}Редактирование {{ service_name }}{% else %}Создание нового сервиса{% endif %}</h1>
+    <form action="{% if service %}/service/update/{{ service_name }}{% else %}/service/create/{% endif %}" method="post">
+        
+        {% if service_json %}
+            <label for="service_select">Выберите сервис:</label>
+            <select id="service_select" onchange="fillServiceDetails({{service_json}})">
+                <option disabled selected>-- Выберите сервис --</option>
+                {% for name in service_json.keys() %}
+                    <option>{{ name }}</option>
+                {% endfor %}
+            </select><br><br>
+        {% endif%}
+
+        <label for="new_service_name">Название сервиса<span style="color: red;" title="Это обязательное поле">*</span>:</label>
+        <input type="text" id="new_service_name" name="new_service_name" value="{{ service_name if service else '' }}" required><br>
+        <label for="image">Название образа<span style="color: red;" title="Это обязательное поле">*</span>:</label>
+        <input type="text" id="image" name="image" value="{{ service.image if service else '' }}" required><br>
+
+        <label for="container_name">Название контейнера:</label>
+        <input type="text" id="container_name" name="container_name" value="{{ service.container_name if service.container_name else '' }}"><br>
+
+        <label>Порты:</label>
+        <div id="ports">
+            {% if service %}
+                {% for port in service.ports or [] %}
+                    <div class="dynamic-field">
+                        <input type="text" name="ports" value="{{ port }}">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addField('ports')">Добавить порт</button><br>
+
+        <label>Тома:</label>
+        <div id="volumes">
+            {% if service %}
+                {% for volume in service.volumes or [] %}
+                    <div class="dynamic-field">
+                        <input type="text" name="volumes_key" value="{{ volume.split(':')[0] }}" list="volumes_list">
+                        <input type="text" name="volumes_value" value="{{ volume.split(':')[1] }}">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addDoubleField('volumes', 'volumes_list')">Добавить том</button><br>
+
+        <label>Переменные окружения:</label>
+        <div id="environment">
+            {% if service and service.environment %}
+                {% for key, value in service.environment.items() %}
+                    <div class="dynamic-field">
+                        <input type="text" name="environment_key" value="{{ key }}">
+                        <input type="text" name="environment_value" value="{{ value }}">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addDoubleField('environment')">Добавить переменную окружения</button><br>
+
+        <label>Сети:</label>
+        <div id="networks">
+            {% if service %}
+                {% for network in service.networks or [] %}
+                    <div class="dynamic-field">
+                        <input type="text" name="networks" value="{{ network }}" list="networks_list">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addField('networks', 'networks_list')">Добавить сеть</button><br>
+
+        <label>Зависимости:</label>
+        <div id="depends_on">
+            {% if service %}
+                {% for dependency in service.depends_on or [] %}
+                    <div class="dynamic-field">
+                        <input type="text" name="depends_on" value="{{ dependency }}" list="depends_on_list">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addField('depends_on', 'depends_on_list')">Добавить зависимость</button><br>
+
+        <label for="command">Команда:</label>
+        <input type="text" id="command" name="command" value="{{ service.command if service.command else '' }}"><br>
+
+        <label for="restart">Политика перезапуска:</label>
+        <select id="restart" name="restart">
+            <option value="no" selected>Не перезапускать</option>
+            <option value="always">Всегда перезапускать</option>
+            <option value="unless-stopped">Перезапускать, если не остановлен вручную</option>
+            <option value="on-failure">Перезапускать при ошибке завершения</option>
+        </select>
+        <div>
+            <button type="submit">{% if service %}Сохранить изменения{% else %}Создать сервис{% endif %}</button>
+            <a href="/">Назад</a>
+        </div>
+    </form>
+
+    <datalist id="depends_on_list">
+        {% for service_name in service_names %}
+            <option value="{{ service_name }}">{{ service_name }}</option>
+        {% endfor %}
+    </datalist>
+
+    <datalist id="networks_list">
+        {% for network in network_names %}
+            <option value="{{ network }}">{{ network }}</option>
+        {% endfor %}
+    </datalist>
+
+    <datalist id="volumes_list">
+        {% for volume in volume_names %}
+            <option value="{{ volume }}">{{ volume }}</option>
+        {% endfor %}
+    </datalist>
+</body>
+</html>

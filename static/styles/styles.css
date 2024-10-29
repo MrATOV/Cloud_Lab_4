@@ -1,0 +1,118 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+h1, h2 {
+    color: #333;
+    text-align: center;
+}
+button {
+    background-color: #007BFF;
+    
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    font-size: 20px;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+button:hover {
+    background-color: #0056b3;
+}
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    padding: 15px;
+    position: relative;
+}
+
+.delete-button {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    font-size: 48px;
+    color: red;
+    background: none;
+    border: none;
+    cursor: pointer; 
+    line-height: 1;
+    padding: 0;
+}
+.delete-button:hover {
+    color: darkred; 
+    background: none;
+}
+
+.card-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.add-button-container {
+    display: flex;
+    justify-content: flex-start;
+    flex: 0 1 calc(20% - 10px);
+    margin-bottom: 10px;
+}
+
+.add-button-container button {
+    width: 100%;
+    height: 100%;
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+.card {
+    flex: 0 1 calc(20% - 10px);
+    margin: 5px;
+    box-sizing: border-box;
+}
+
+.card-content {
+    margin-bottom: 10px;
+}
+.card-actions {
+    display: flex;
+    flex-wrap: wrap;
+}
+.card-actions button {
+    flex: 1;
+    margin: 5px;
+    font-size: 14px;
+}
+
+.section {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-right: 10px;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная работа 4. ОВ</title>
+    <script src="/static/scripts/delete.js"></script>
+    <script src="/static/scripts/popup.js"></script>
+    <link rel="stylesheet" href="/static/styles/styles.css">
+</head>
+<body>
+    <h1>Лабораторная работа 4. Облачные вычисления</h1>
+    <div class="section">
+        <button onclick="location.href='/docker_compose/run'" ><img width="30" height="30" src="/static/img/run.svg">Запустить все образы</button>
+        <button onclick="location.href='/docker_compose/restart'"><img width="20" height="20" style="margin-right: 10px;" src="/static/img/restart.svg">Перезапуск всех образов</button>
+        <button onclick="location.href='/docker_compose/stop'"><img width="30" height="30" src="/static/img/stop.svg">Остановка всех образов</button>
+        <button onclick="location.href='/docker_compose/delete'"><img width="20" height="20" style="margin-right: 10px;" src="/static/img/delete.svg">Удалить все образы</button>
+    </div>
+
+    <h2>Сервисы</h2>
+        <div class="card-container">
+        {% if docker_compose.services %}
+            {% for service_name, service in docker_compose.services.items() %}
+                <div class="card">
+                    <button class="delete-button" onclick="deleteService('{{ service_name }}')">&times;</button>
+                    <div class="card-title"><strong>{{ service_name }}</strong></div>
+                    <div class="card-content">
+                        <p><strong>Название образа:</strong> {{ service.image }}</p>
+                        <p><strong>Название контейнера:</strong> {% if service.container_name %} {{ service.container_name }} {% else %} {{ service_name }} {% endif %}</p>
+                    </div>
+                    <div class="card-actions">
+                        <button onclick="location.href='/service/{{ service_name }}'">Подробнее</button>
+                        <button onclick="location.href='/service/edit/{{ service_name }}'">Редактировать</button>
+                        <button onclick="location.href='/storage/{{ service_name }}'">Хранилище</button>
+                    </div>
+                    <div>
+                        <p>
+                            <strong>Состояние:</strong> 
+                            {% if load_containers[service_name] %} 
+                                <span style="color: green;"><strong>Загружен</strong></span>
+                                {% if service.ports[0] %}
+                                    <a href="/service/open/{{ service.ports[0].split(':')[0] }}">Открыть</a> 
+                                {% endif %}
+                            {% else %} 
+                                Не загружен 
+                            {% endif %}
+                        </p>
+                        
+                    </div>
+                    <div class="card-actions">
+                        <button onclick="location.href='/docker_compose/run/{{ service_name }}'"><img width="35" height="35" src="/static/img/run.svg"></button>
+                        <button onclick="location.href='/docker_compose/restart/{{ service_name }}'"><img width="27" height="27" src="/static/img/restart.svg"></button>
+                        <button onclick="location.href='/docker_compose/stop/{{ service_name }}'"><img width="35" height="35" src="/static/img/stop.svg"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="add-button-container">
+            <button onclick="location.href='/service/edit/new'"><img width="150" height="150" src="/static/img/plus.svg"></button>
+        </div>
+        </div>
+
+    <h2>Тома</h2>
+    <div class="card-container">
+        {% if docker_compose.volumes %}
+            {% for volume_name, volume in docker_compose.volumes.items() %}
+                <div class="card">
+                    <button class="delete-button" onclick="deleteVolume('{{ volume_name }}')">&times;</button>
+                    <div class="card-title"><strong>{{ volume_name }}</strong></div>
+                    <div class="card-actions">
+                        <button onclick="location.href='/volume/{{ volume_name }}'">Подробнее</button>
+                        <button onclick="location.href='/volume/edit/{{ volume_name }}'">Редактировать</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="add-button-container">
+            <button onclick="location.href='/volume/edit/new'"><img width="90" height="90" src="/static/img/plus.svg"></button>
+        </div>
+    </div>
+
+    <h2>Сети</h2>
+    <div class="card-container">
+        {% if docker_compose.networks %}
+            {% for network_name, network in docker_compose.networks.items() %}
+                <div class="card">
+                    <button class="delete-button" onclick="deleteNetwork('{{ network_name }}')">&times;</button>
+                    <div class="card-title"><strong>{{ network_name }}</strong></div>
+                    <div class="card-actions">
+                        <button onclick="location.href='/network/{{ network_name }}'">Подробнее</button>
+                        <button onclick="location.href='/network/edit/{{ network_name }}'">Редактировать</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="add-button-container">
+            <button onclick="location.href='/network/edit/new'"><img width="90" height="90" src="/static/img/plus.svg"></button>
+        </div>
+    </div>
+    {% if message %}
+        <div id="popup" class="popup">{{ message }}</div>
+    {% endif %}
+</body>
+</html>

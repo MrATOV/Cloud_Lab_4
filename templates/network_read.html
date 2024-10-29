@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if network %}Просмотр сети: {{ network.name }}{% else %}Сеть не найдена{% endif %}</title>
+    <link rel="stylesheet" href="/static/styles/read_styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>{% if network %}Просмотр сети: {{ network.name }}{% else %}Сеть не найдена{% endif %}</h1>
+
+        {% if network %}
+            <p><strong>Драйвер:</strong> {{ network.driver | default('Не указано') }}</p>
+            
+            <h2>Опции драйвера:</h2>
+            <ul>
+                {% if network.driver_opts %}
+                    {% for key, value in network.driver_opts.items() %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Нет опций драйвера</li>
+                {% endif %}
+            </ul>
+
+            <h2>IPAM:</h2>
+            {% if network.ipam %}
+                <p><strong>Драйвер IPAM:</strong> {{ network.ipam.driver | default('Не указано') }}</p>
+                <h3>Конфигурация IPAM:</h3>
+                <ul>
+                    {% if network.ipam.config %}
+                        {% for item in network.ipam.config %}
+                            <li>
+                                <strong>Подсеть:</strong> {{ item.subnet }}<br>
+                                <strong>Шлюз:</strong> {{ item.gateway | default('Не указан') }}
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li>Нет конфигурации IPAM</li>
+                    {% endif %}
+                </ul>
+            {% else %}
+                <p>IPAM не указана</p>
+            {% endif %}
+
+            <h2>Метки:</h2>
+            <ul>
+                {% if network.labels %}
+                    {% for key, value in network.labels.items() %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Нет меток</li>
+                {% endif %}
+            </ul>
+
+            <p><strong>Внешний:</strong> {{ network.external | default('Нет') }}</p>
+
+        {% else %}
+            <p>Сеть не найдена.</p>
+        {% endif %}
+
+        <a href="/">Назад</a>
+    </div>
+</body>
+</html>

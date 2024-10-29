@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if service %}Настройки {{ service_name }}{% else %}Сервис не найден{% endif %}</title>
+    <link rel="stylesheet" href="/static/styles/read_styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>{% if service %}Настройки {{ service_name }}{% else %}Сервис не найден{% endif %}</h1>
+
+        {% if service %}
+            <p><strong>Название сервиса:</strong> {{ service_name }}</p>
+            <p><strong>Название образа:</strong> {{ service.image }}</p>
+            <p><strong>Название контейнера:</strong> {{ service.container_name }}</p>
+
+            <h2>Порты:</h2>
+            <ul>
+                {% if service.ports %}
+                    {% for port in service.ports %}
+                        <li>{{ port }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Нет портов</li>
+                {% endif %}
+            </ul>
+
+            <h2>Тома:</h2>
+            <ul>
+                {% if service.volumes %}
+                    {% for volume in service.volumes %}
+                        <li>{{ volume }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Нет томов</li>
+                {% endif %}
+            </ul>
+
+            <h2>Переменные окружения:</h2>
+            <ul>
+                {% if service.environment %}
+                    {% for key, value in service.environment.items() %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Нет переменных окружения</li>
+                {% endif %}
+            </ul>
+
+            <h2>Сети:</h2>
+            <ul>
+                {% if service.networks %}
+                    {% for network in service.networks %}
+                        <li>{{ network }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Нет сетей</li>
+                {% endif %}
+            </ul>
+
+            <h2>Зависимости:</h2>
+            <ul>
+                {% if service.depends_on %}
+                    {% for dependency in service.depends_on %}
+                        <li>{{ dependency }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Нет зависимостей</li>
+                {% endif %}
+            </ul>
+
+            <p><strong>Команда:</strong> {{ service.command }}</p>
+            <p><strong>Политика перезапуска:</strong>
+                {% if service.restart == "no" %}
+                    Не перезапускать
+                {% elif service.restart == "always" %}
+                    Всегда перезапускать
+                {% elif service.restart == "unless-stopped" %}
+                    Перезапускать, если не остановлен вручную
+                {% elif service.restart == "on-failure" %}
+                    Перезапускать при ошибке завершения
+                {% endif %}
+             </p>
+
+        {% else %}
+            <p>Сервис не найден.</p>
+        {% endif %}
+
+        <a href="/">Назад</a>
+    </div>
+</body>
+</html>

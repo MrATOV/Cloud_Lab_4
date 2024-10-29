@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хранилище {{ current_path }}</title>
+    <link rel="stylesheet" href="/static/styles/storage_styles.css">
+    <script src="/static/scripts/delete.js"></script>
+    <script src="/static/scripts/file_input_status.js"></script>
+    <script src="/static/scripts/popup.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Хранилище {{ current_path }}</h1>
+
+        <h2>Файлы</h2>
+        <ul>
+            {% for file in files %}
+                <li>
+                    {{ file }}
+                    <button onclick="deleteFile('{{current_path}}', '{{ file }}')">Удалить</button>
+                </li>
+            {% endfor %}
+            <li>
+                <form action="/storage/file/add/{{ current_path }}" method="post" enctype="multipart/form-data">
+                    <label class="custom-file-upload">
+                        Выбрать файл
+                        <input type="file" name="file" required onchange="updateUploadStatus(this)">
+                    </label>
+                    <span id="upload-status" class="upload-status"></span>
+                    <button type="submit">Загрузить файл</button>
+                </form>
+            </li>
+        </ul>
+
+        <h2>Директории</h2>
+        <ul>
+            {% for directory in directories %}
+                <li>
+                    <a href="/storage/{{ current_path }}/{{ directory }}" class="directory-link">{{ directory }}</a>
+                    <button onclick="deleteFolder('{{current_path}}', '{{ directory }}')">Удалить</button>
+                </li>
+            {% endfor %}
+            <li>
+                <form action="/storage/folder/add/{{ current_path }}" method="post">
+                    <input type="text" name="folder_name" required placeholder="Имя директории">
+                    <button type="submit">Создать директорию</button>
+                </form>
+            </li>
+        </ul>
+
+        {% if current_path.count('/') > 0 %}
+            {% set parent_path = current_path.rsplit('/', 1)[0] %}
+            <a href="/storage/{{ parent_path }}" class="link-button">Назад</a>
+        {% endif %}
+        <a href="/" class="link-button">Выйти из хранилища</a>
+    </div>
+    {% if message %}
+        <div id="popup" class="popup">{{ message }}</div>
+    {% endif %}
+</body>
+</html>

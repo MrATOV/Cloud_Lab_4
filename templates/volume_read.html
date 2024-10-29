@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if volume %}Просмотр тома: {{ volume_name }}{% else %}Том не найден{% endif %}</title>
+    <link rel="stylesheet" href="/static/styles/read_styles.css">
+</head>
+<body>
+    <div class="container">
+
+        <h1>{% if volume %}Просмотр тома: {{ volume_name }}{% else %}Том не найден{% endif %}</h1>
+
+        {% if volume %}
+            <p><strong>Драйвер:</strong> {{ volume.driver }}</p>
+            
+            <h2>Опции драйвера:</h2>
+            <ul>
+                {% if volume.driver_opts %}
+                    {% for key, value in volume.driver_opts.items() %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Нет опций драйвера</li>
+                {% endif %}
+            </ul>
+
+            <h2>Метки:</h2>
+            <ul>
+                {% if volume.labels %}
+                    {% for key, value in volume.labels.items() %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Нет меток</li>
+                {% endif %}
+            </ul>
+
+            <p><strong>Внешний:</strong> {{ volume.external | default('Нет') }}</p>
+            <p><strong>Название:</strong> {{ volume.name | default('Не указано') }}</p>
+
+        {% else %}
+            <p>Том не найден.</p>
+        {% endif %}
+
+        <a href="/">Назад</a>
+    </div>
+</body>
+</html>

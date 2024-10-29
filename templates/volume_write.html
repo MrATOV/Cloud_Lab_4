@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if volume %}Редактирование тома: {{ volume_name }}{% else %}Создание нового тома{% endif %}</title>
+    <link rel="stylesheet" href="/static/styles/write_styles.css">
+    <script src="/static/scripts/dynamic_field.js"></script>
+</head>
+<body>
+    <h1>{% if volume %}Редактирование тома: {{ volume_name }}{% else %}Создание нового тома{% endif %}</h1>
+    <form action="{% if volume %} /volume/update/{{ volume_name}}{% else %} /volume/create {% endif%}" method="post">
+        <label for="new_volume_name">Название тома<span style="color: red;" title="Это обязательное поле">*</span>:</label>
+        <input type="text" id="new_volume_name" name="new_volume_name" value="{{ volume_name if volume else '' }}" required><br>
+
+        <label for="driver">Драйвер<span style="color: red;" title="Это обязательное поле">*</span>:</label>
+        <input type="text" id="driver" name="driver" value="{{ volume.driver if volume else 'local' }}" required list="driver_list"><br>
+
+        <label>Опции драйвера:</label>
+        <div id="driver_opts">
+            {% if volume.driver_opts %}
+                {% for key, value in volume.driver_opts.items() %}
+                    <div>
+                        <input type="text" name="driver_opts_key" value="{{ key }}">
+                        <input type="text" name="driver_opts_value" value="{{ value }}">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor%}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addDoubleField('driver_opts')">Добавить опцию драйвера</button><br>
+    
+        <label>Метки:</label>
+        <div id="labels">
+            {% if volume.labels %}
+                {% for key, value in volume.labels.items() %}
+                    <div>
+                        <input type="text" name="labels_key" value="{{ key }}">
+                        <input type="text" name="labels_value" value="{{ value }}">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor%}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addDoubleField('labels')">Добавить метку</button><br>
+
+        <div>
+            <input type="checkbox" id="external" name="external" {% if volume.external %}checked{% endif %}>
+            <label for="external">  Внешний</label>
+        </div>
+
+        <label for="name">Название:</label>
+        <input type="text" id="name" name="name" value="{{ volume.name if volume else '' }}">
+
+        <div>
+            <button type="submit">Сохранить</button>
+            <a href="/">Назад</a>
+        </div>
+    </form>
+
+
+    <datalist id="driver_list">
+        <option value="local">local</option>
+        <option value="nfs">nfs</option>
+        <option value="tmpfs">tmpfs</option>
+        <option value="glusterfs">glusterfs</option>
+        <option value="rexray/s3fs">rexray/s3fs</option>
+        <option value="azurefile">azurefile</option>
+        <option value="cifs">cifs</option>
+        <option value="portworx">portworx</option>
+        <option value="longhorn">longhorn</option>
+    </datalist>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if network %}Редактирование сети: {{ network.name }}{% else %}Создание новой сети{% endif %}</title>
+    <link rel="stylesheet" href="/static/styles/write_styles.css">
+    <script src="/static/scripts/dynamic_field.js"></script>
+</head>
+<body>
+    <h1>{% if network %}Редактирование сети: {{ network.name }}{% else %}Создание новой сети{% endif %}</h1>
+    <form action="{% if network %} /network/update/{{ network.name }}{% else %} /network/create {% endif %}" method="post">
+        <label for="network_name">Название сети<span style="color: red;" title="Это обязательное поле">*</span>:</label>
+        <input type="text" id="network_name" name="network_name" value="{{ network.name if network else '' }}" required><br>
+
+        <label for="driver">Драйвер<span style="color: red;" title="Это обязательное поле">*</span>:</label>
+        <input type="text" id="driver" name="driver" value="{{ network.driver if network else '' }}" required list="driver_list"><br>
+
+        <label>Опции драйвера:</label>
+        <div id="driver_opts">
+            {% if network.driver_opts %}
+                {% for key, value in network.driver_opts.items() %}
+                    <div>
+                        <input type="text" name="driver_opts_key" value="{{ key }}">
+                        <input type="text" name="driver_opts_value" value="{{ value }}">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addDoubleField('driver_opts')">Добавить опцию драйвера</button><br>
+    
+        <label>IPAM:</label>
+        <div id="ipam">
+            {% if network.ipam %}
+                <p><strong>Драйвер IPAM:</strong> {{ network.ipam.driver | default('Не указано') }}</p>
+                <h3>Конфигурация IPAM:</h3>
+                {% for item in network.ipam.config %}
+                    <div>
+                        <input type="text" name="ipam_subnet" value="{{ item.subnet }}" placeholder="Подсеть">
+                        <input type="text" name="ipam_gateway" value="{{ item.gateway | default('') }}" placeholder="Шлюз">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addDoubleField('ipam')">Добавить конфигурацию IPAM</button><br>
+
+        <label>Метки:</label>
+        <div id="labels">
+            {% if network.labels %}
+                {% for key, value in network.labels.items() %}
+                    <div>
+                        <input type="text" name="labels_key" value="{{ key }}">
+                        <input type="text" name="labels_value" value="{{ value }}">
+                        <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <button type="button" onclick="addDoubleField('labels')">Добавить метку</button><br>
+
+        <div>
+            <input type="checkbox" id="external" name="external" {% if network.external %}checked{% endif %}>
+            <label for="external">  Внешний</label>
+        </div>
+
+        <div>
+            <button type="submit">Сохранить</button>
+            <a href="/">Назад</a>
+        </div>
+
+    </form>
+
+
+    <datalist id="driver_list">
+        <option value="bridge">bridge</option>
+        <option value="overlay">overlay</option>
+        <option value="macvlan">macvlan</option>
+        <option value="none">none</option>
+    </datalist>
+
+</body>
+</html>
